@@ -1,19 +1,3 @@
-/**
- GIVEN a command-line application that accepts user input
-WHEN I am prompted for information about my application repository
-THEN a high-quality, professional README.md is generated with the title of my project and sections entitled Description, Table of Contents, Installation, Usage, License, Contributing, Tests, and Questions
-WHEN I enter my project title
-THEN this is displayed as the title of the README
-WHEN I enter a description, installation instructions, usage information, contribution guidelines, and test instructions
-THEN this information is added to the sections of the README entitled Description, Installation, Usage, Contributing, and Tests
-WHEN I choose a license for my application from a list of options
-THEN a badge for that license is added near the top of the README and a notice is added to the section of the README entitled License that explains which license the application is covered under
-WHEN I enter my GitHub username
-THEN this is added to the section of the README entitled Questions, with a link to my GitHub profile
-WHEN I enter my email address
-THEN this is added to the section of the README entitled Questions, with instructions on how to reach me with additional questions
-WHEN I click on the links in the Table of Contents
-THEN I am taken to the corresponding section of the README */
 
 // TODO: Include packages needed for this application
 const inquirer = require('inquirer');
@@ -49,7 +33,7 @@ const questions = [
         name: 'license',
         type: 'checkbox',
         message: 'What kind of license(s) do you want to include?',
-        choices: ['MIT', 'GNU General Public', 'Apache', 'BSD', 'Creative Commons', 'Mozilla'],
+        choices: ['MIT', 'GNU General Public', 'Apache', 'BSD'],
     },
     {
         name: 'username',
@@ -73,30 +57,63 @@ const questions = [
  * Also, can you explain self-contained inquirer module?
  */
 
-const questionnaire = inquirer.prompt(questions).then((answers) => {
+function questionnaire() {
+    
+    inquirer.prompt(questions).then((answers) => {
     const readMePath = `${answers.title}.md`;
+    let licenseIcons = [];
+    let mitIcon = "<img src='https://www.svgrepo.com/show/444064/legal-license-mit.svg' alt='icon' width='100px' height='100px' margin='25px'>";
+    let gnuIcon = "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/License_icon-gpl-3.svg/2048px-License_icon-gpl-3.svg.png' alt='icon' width='100px' height='100px' margin='25px'>";
+    let apacheIcon = "<img src='https://static-00.iconduck.com/assets.00/apache-icon-1024x2048-c1uxmyjc.png' alt='icon' width='100px' height='100px' margin='25px'>";
+    let bsdIcon = "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/License_icon-bsd.svg/2048px-License_icon-bsd.svg.png' alt='icon' width='100px' height='100px' margin='25px'>";
+    
+    for (let i = 0; i < answers.license.length; i++){
+        if(answers.license[i] === 'MIT'){
+            licenseIcons.push(mitIcon);
+        } else if(answers.license[i] === 'GNU General Public'){
+            licenseIcons.push(gnuIcon);
+        } else if(answers.license[i] === 'Apache'){
+            licenseIcons.push(apacheIcon);
+        } else if (answers.license[i] === 'BSD'){
+            licenseIcons.push(bsdIcon);
+        };
+    };
     const readMeContent = `
-        #${answers.title}\n \n
-        ##Description \n\n
-        ${answers.decription}\n\n
+# ${answers.title}\n \n
+## Description \n\n
+${answers.decription}\n\n
 
-        ##Installation Guide\n\n
-        ${answers.installation}\n\n
+## Table of Contents \n\n
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contribution](#contribution)
+- [Tests](#tests)
+- [License](#license)
+- [Questions](#questions)
 
-        ##Usage Guide\n\n
-        ${answers.usage}\n\n
+## Installation\n\n
+${answers.installation}\n\n
 
-        ##Contribution Guidelines\n\n
-        ${answers.guidelines}\n\n
+## Usage\n\n
+${answers.usage}\n\n
 
-        ##Tests\n\n
-        ${answers.tests}\n\n
+## Contribution\n\n
+${answers.guidelines}\n\n
 
-        ##License Requirements\n\n
-        ${answers.license}\n\n
+## Tests\n\n
+${answers.tests}\n\n
+
+## License\n\n
+${licenseIcons.join(' ')}\n\n
+
+## Questions\n\n
+For any questions, please feel free to use the below contact info. We'll respond as quickly as possible.\n\n
+Github Username: [${answers.username}](https://github.com/${answers.username})\n
+Github Email: [Email](mailto:${answers.email})
     `
     writeToFile(readMePath, readMeContent);
 })
+};
 
 // TODO: Create a function to write README file
 function writeToFile(fileName, content) {
